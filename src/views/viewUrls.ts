@@ -157,9 +157,11 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
                     return ''
                 }
                 const isRequired = required.includes(k)
+                const description = v.description ? v.description.replace(/\/(\*)+/gi, '').replace(/(\*)+\/$/gi, '') : ''
+                console.log(description)
                 return `
     /**
-     * ${v.description}
+     * ${description}
      * @type {${type}}
      * @memberof ${key}
      */
