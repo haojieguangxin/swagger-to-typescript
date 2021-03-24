@@ -44,4 +44,8 @@ This extension contributes the following settings:
 
 2. 设置返回的属性都是必填
 
+### 0.0.5
+
+bug修复：部分number类型没有设置成 number | string
+
 **Enjoy!**
