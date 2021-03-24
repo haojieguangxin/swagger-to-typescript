@@ -34,4 +34,14 @@ This extension contributes the following settings:
 
 2. 解决windows端导出typescript不生效问题
 
+### 0.0.3
+
+1. 增加点击链接跳转到swagger-ui的功能
+
+### 0.0.4
+
+1. 根据具体项目情况做了调整，一般情况下传递给后端的日期为string类型的，所以生成的typescript删除掉date类型
+
+2. 设置返回的属性都是必填
+
 **Enjoy!**
