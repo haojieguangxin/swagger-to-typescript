@@ -61,8 +61,8 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
         // todo: 没找到内嵌URL的方法
         // this.panel.webview.html = `<iframe src="${url}" width="100%" height="500px"/>`
     }
-    generateTs (schemas: any, fileName: string) {
-        const content = this.schemas2ts(schemas)
+    generateTs (params: any, fileName: string) {
+        const content = this.schemas2ts(params)
         fs.writeFile(fileName, content, "utf-8", function (err) {
             if (err) {
                 console.log(err)
@@ -100,7 +100,8 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             description: urlParams.info.description,
             children: children,
             collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-            schemas: urlParams.definitions || urlParams.components.schemas
+            schemas: urlParams.definitions || urlParams.components.schemas,
+            paths: urlParams.paths
         })
         return result
     }
@@ -145,8 +146,25 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
         }
         return result
     }
-    private schemas2ts (schemas: any): string {
-        const result = Object.entries(schemas).filter(([key, value]:any) => {
+    private schemas2ts (params: any): string {
+        // 0.0.4 获取paths中的出参对应的shemas，出参中的所有属性都是必填的
+        let respRef: Array<any> = []
+        Object.entries(params.paths).map(([key, value]:any) => {
+            // 过滤出来有$ref的response
+            const result = Object.entries(value).filter(([k, v]:any) => {
+                const content = v.responses[200].content
+                if (content) {
+                    return content['*/*'].schema.$ref
+                }
+                return false
+            }).map(([k, v]:any) => {
+                const ref = v.responses[200].content['*/*'].schema.$ref
+                const index = ref.lastIndexOf('/')
+                return ref.substr(index + 1)
+            })
+            respRef = respRef.concat(result)
+        })
+        const result = Object.entries(params.schemas).filter(([key, value]:any) => {
             return !!value.properties
         }).map(([key,value]:any) => {
             const properties = value.properties
@@ -156,9 +174,9 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
                 if (!type) {
                     return ''
                 }
-                const isRequired = required.includes(k)
+                const isRequired = required.includes(k) || respRef.includes(key)
+                // 0.0.4版本处理说明里面有注解符号(/**  */)的情况，容易产生语法错误
                 const description = v.description ? v.description.replace(/\/(\*)+/gi, '').replace(/(\*)+\/$/gi, '') : ''
-                console.log(description)
                 return `
     /**
      * ${description}
@@ -188,11 +206,12 @@ export interface ${key} {
         const format = params.format ? params.format.toLowerCase() : ''
         const items = params.items
         if (type === 'integer') {
-            type = 'number'
+            type = 'number | string'
         } else if (type === 'string') {
-            if (format === 'date-time' || format === 'date') {
-                type = 'Date'
-            }
+            // 0.04 版本删除这个部分，前端传递的都是string类型没有Date类型
+            // if (format === 'date-time' || format === 'date') {
+            //     type = 'Date'
+            // }
         } else if (type === 'array') {
             if (items) {
                 if (items.$ref) {
@@ -219,5 +238,6 @@ interface urlItem {
     children?: Array<urlItem>
     collapsibleState?: vscode.TreeItemCollapsibleState,
     command?: vscode.Command,
-    schemas?: Array<any>
+    schemas?: Array<any>,
+    paths?: Array<any>
 }

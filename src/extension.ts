@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (item.path.indexOf(':/') > 0 && item.path.indexOf('/') === 0) {
 				item.path = item.path.substr(1)
 			}
-			urlTreeDataProviderObj.generateTs(params.schemas, item.path + '.ts')
+			urlTreeDataProviderObj.generateTs(params, item.path + '.ts')
 		})
 	})
 	vscode.commands.registerCommand('swagger-to-typescript.refresh', () => {
