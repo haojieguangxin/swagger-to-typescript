@@ -205,7 +205,7 @@ export interface ${key} {
         type = type.toLowerCase()
         const format = params.format ? params.format.toLowerCase() : ''
         const items = params.items
-        if (type === 'integer') {
+        if (type === 'integer' || type === 'number') {
             type = 'number | string'
         } else if (type === 'string') {
             // 0.04 版本删除这个部分，前端传递的都是string类型没有Date类型
