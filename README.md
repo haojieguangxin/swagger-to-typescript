@@ -48,4 +48,12 @@ This extension contributes the following settings:
 
 bug修复：部分number类型没有设置成 number | string
 
+### 0.0.6
+
+bug修复：
+
+1. 当属性类型为Object的时候，swagger请求返回值中没有type，导致属性被清空的问题
+
+2. 对于model名称是用内部类生成的，有特殊符号«»直接进行了替换
+
 **Enjoy!**

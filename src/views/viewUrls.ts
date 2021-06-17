@@ -186,13 +186,15 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
     ${k}${isRequired ? ': ' : '?: '}${type}
 `
             })
+            // 针对内部类命名为IPage«xxx»的处理
+            const displayKey = key.replace(/«|»/gi, '')
             return `
 /**
 * ${value.description || ''}
 * @export
-* @interface ${key}
+* @interface ${displayKey}
 */
-export interface ${key} {
+export interface ${displayKey} {
     ${propArr.join('')}
 }
 `
@@ -201,7 +203,14 @@ export interface ${key} {
     }
     private switchType (params: any) {
         let type = params.type
-        if (!type) return ''
+        // 当没有type的时候的处理，查看是否有ref属性，有ref就是对应到object属性
+        if (!type) {
+            const ref = params.$ref
+            if (ref) {
+                return ref.substr(ref.lastIndexOf('/') + 1)
+            }
+            return ''
+        }
         type = type.toLowerCase()
         const format = params.format ? params.format.toLowerCase() : ''
         const items = params.items
