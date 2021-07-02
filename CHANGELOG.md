@@ -1,9 +1,39 @@
-# Change Log
+## 版本更新
 
-All notable changes to the "swagger-to-typescript" extension will be documented in this file.
+### 0.0.1
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+初始测试版本
 
-## [Unreleased]
+### 0.0.2
 
-- Initial release
+1. 增加插件logo显示
+
+2. 解决windows端导出typescript不生效问题
+
+### 0.0.3
+
+1. 增加点击链接跳转到swagger-ui的功能
+
+### 0.0.4
+
+1. 根据具体项目情况做了调整，一般情况下传递给后端的日期为string类型的，所以生成的typescript删除掉date类型
+
+2. 设置返回的属性都是必填
+
+### 0.0.5
+
+bug修复：部分number类型没有设置成 number | string
+
+### 0.0.6
+
+bug修复：
+
+1. 当属性类型为Object的时候，swagger请求返回值中没有type，导致属性被清空的问题
+
+2. 对于model名称是用内部类生成的，有特殊符号«»直接进行了替换
+
+### 0.0.7
+
+1. 增加changeLog信息
+
+2. 换一个图标，用我喜欢的林李

@@ -3,8 +3,8 @@
 	"displayName": "swagger-to-typescript",
 	"description": "swagger to typescript plugin",
 	"publisher": "jeffrey",
-	"icon": "assets/app-icon.png",
-	"version": "0.0.6",
+	"icon": "assets/app-icon.jpg",
+	"version": "0.0.7",
 	"engines": {
 		"vscode": "^1.46.1"
 	},
