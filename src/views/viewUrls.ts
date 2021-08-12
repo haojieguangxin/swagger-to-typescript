@@ -179,11 +179,18 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             const result = Object.entries(value).filter(([k, v]:any) => {
                 const content = v.responses[200].content
                 if (content) {
-                    return content['*/*'].schema.$ref || content['*/*'].schema.items.$ref
+                    let ref = content['*/*'].schema.$ref
+                    if (!ref && content['*/*'].schema.items) {
+                        ref = content['*/*'].schema.items.$ref
+                    }
+                    return !!ref
                 }
                 return false
             }).map(([k, v]:any) => {
-                const ref = v.responses[200].content['*/*'].schema.$ref
+                let ref = v.responses[200].content['*/*'].schema.$ref
+                if (!ref) {
+                    ref = v.responses[200].content['*/*'].schema.items.$ref
+                }
                 const index = ref.lastIndexOf('/')
                 return ref.substr(index + 1)
             })
