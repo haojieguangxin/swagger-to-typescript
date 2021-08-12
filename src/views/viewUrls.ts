@@ -16,28 +16,24 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<urlItem | undefined | null | void> = new vscode.EventEmitter<urlItem | undefined | null | void>()
     readonly onDidChangeTreeData: vscode.Event<urlItem | undefined | null | void> = this._onDidChangeTreeData.event
   
-    // panel: any
-
+    /**
+     * 更新数据
+     */
     refresh(): void {
         this._onDidChangeTreeData.fire()
     }
-    constructor() {
-        // this.panel = vscode.window.createWebviewPanel(
-        //     'swaggerUI',
-        //     'swagger ui',
-        //     vscode.ViewColumn.One,
-        //     {}
-        // )
-    }
+    constructor() {}
     async getChildren (element: urlItem): Promise<urlItem[]> {
         if (element) {
             if (element.configUrl) {
                 const data = await this.getUrlsJson(element.configUrl)
-                return data.urls.map((item:any) => {
+                console.log(element.configUrl)
+                console.log(data)
+                return (data.urls || data).map((item:any) => {
                     return {
                         label: item.name,
                         url: element.label + item.url,
-                        swaggerUi: element.label + '/swagger-ui/index.html?configUrl=' + encodeURIComponent('/v3/api-docs/swagger-config&urls.primaryName=' + item.name),
+                        swaggerUi: item.swaggerVersion == '2.0' ? element.label + '/swagger-ui.html?urls.primaryName=' + item.name : element.label + '/swagger-ui/index.html?configUrl=' + encodeURIComponent('/v3/api-docs/swagger-config&urls.primaryName=' + item.name),
                         collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
                     }
                 })
@@ -46,6 +42,9 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             }
             return element.children || []
         }
+        /**
+         * 此处是初始化展示
+         */
         const result = this.getConfigSwaggerInfo()
         return [{
             label: 'swagger接口',
@@ -56,6 +55,11 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
     getTreeItem (element: urlItem): vscode.TreeItem {
         return element
     }
+    /**
+     * 打开对应接口的swagger文档
+     * 
+     * @param url 
+     */
     openSwaggerUI (url: string) {
         vscode.env.openExternal(vscode.Uri.parse(url))
         // todo: 没找到内嵌URL的方法
@@ -72,21 +76,42 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             }
         })
     }
+    /**
+     * 导出api请求
+     * 
+     * @param params 
+     * @param fileName 
+     */
+    generateApi (params: any, fileName: string) {
+        console.log(params)
+        // const content = this.schemas2ts(params)
+        // fs.writeFile(fileName, content, "utf-8", function (err) {
+        //     if (err) {
+        //         console.log(err)
+        //         console.log("文件写入失败")
+        //     } else {
+        //         console.log("文件写入成功，已保存")
+        //     }
+        // })
+    }
+    /**
+     * 获取配置的SwaggerUrl的前缀
+     * 通过swagger-config获取不同业务的请求链接
+     */
     private getConfigSwaggerInfo(): any {
         // 获取swagger接口信息
         const swaggerDomains = vscode.workspace.getConfiguration('swaggerToTs').swaggerDomains
-        return swaggerDomains.map((item:string) => {
+        return swaggerDomains.map((item:any) => {
             // 用于处理只写了域名，没有加/的情况
-            item = item.endsWith('/') ? item.substr(0, item.length - 1) : item
+            let domain = item.domain.endsWith('/') ? item.domain.substr(0, item.domain.length - 1) : item.domain
             return {
-                label: item,
-                configUrl: item + '/v3/api-docs/swagger-config',
+                label: domain,
+                configUrl: item.version === '3' ? domain + '/v3/api-docs/swagger-config' : domain + '/swagger-resources',
                 collapsibleState: vscode.TreeItemCollapsibleState.Expanded
             }
         })
         
     }
-
     private async getJsonInfo(swaggerUrl: string, swaggerUi: string): Promise<urlItem[]> {
         let result = []
         const urlParams = await this.getUrlsJson(swaggerUrl)
@@ -113,7 +138,6 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             return null
         }
     }
-
     private resolveJson (urlParams: any, swaggerUi: string): urlItem[] {
         let map = new Map()
         let result = []
@@ -139,6 +163,7 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
         })
         for (let [key, value] of map) {
             result.push({
+                contextValue: 'subBusiness',
                 label: key,
                 children: value,
                 collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
@@ -154,7 +179,7 @@ export class urlTreeDataProvider implements vscode.TreeDataProvider<urlItem> {
             const result = Object.entries(value).filter(([k, v]:any) => {
                 const content = v.responses[200].content
                 if (content) {
-                    return content['*/*'].schema.$ref
+                    return content['*/*'].schema.$ref || content['*/*'].schema.items.$ref
                 }
                 return false
             }).map(([k, v]:any) => {

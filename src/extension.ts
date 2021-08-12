@@ -20,7 +20,15 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			urlTreeDataProviderObj.generateTs(params, item.path + '.ts')
 		})
-	})
+    })
+	// vscode.commands.registerCommand('swagger-to-typescript.generateApi', (params) => {
+	// 	vscode.window.showSaveDialog({}).then((item:any) => {
+	// 		if (item.path.indexOf(':/') > 0 && item.path.indexOf('/') === 0) {
+	// 			item.path = item.path.substr(1)
+	// 		}
+	// 		urlTreeDataProviderObj.generateApi(params, item.path + '.ts')
+	// 	})
+	// })
 	vscode.commands.registerCommand('swagger-to-typescript.refresh', () => {
 		urlTreeDataProviderObj.refresh()
 	})

@@ -22,10 +22,11 @@
 				"swaggerToTs.swaggerDomains": {
 					"type": "array",
 					"default": [
-						"http://192.168.20.248:40000/",
-						"http://192.168.20.248:30000/"
+                        {"domain": "https://iot-test-auto.hosjoy.com/", "version": "2"},
+                        {"domain": "http://192.168.20.248:40000/", "version": "3"},
+                        {"domain": "http://192.168.20.248:30000/", "version": "3"}
 					],
-					"description": "swagger文档的域名，例如：http://192.168.20.248:40000/"
+					"description": "swagger文档的域名和swagger版本，例如：{\"domain\": \"http://192.168.20.248:40000/\", \"version\": \"3\"}"
 				}
 			}
 		},
@@ -34,7 +35,7 @@
 				"command": "swagger-to-typescript.generateTs",
 				"title": "generateTs",
 				"icon": "/assets/images/export.svg"
-			},
+            },
 			{
 				"command": "swagger-to-typescript.refresh",
 				"title": "refresh",
@@ -71,7 +72,7 @@
 					"command": "swagger-to-typescript.generateTs",
 					"when": "view == swagger-config && viewItem == businessRoot",
 					"group": "inline"
-				}
+                }
 			]
 		}
 	},
