@@ -16,44 +16,10 @@ VSCode 版本 > 1.46.1
 
 This extension contributes the following settings:
 
-* `swaggerToTs.swaggerDomains`: swagger访问地址域名配置
+* `swaggerToTs.swaggerDomains`: swagger访问地址域名配置和使用swagger的版本
 
 ## 使用效果
 
 ![](https://tva1.sinaimg.cn/large/008eGmZEly1gop2aa99buj32cc0lwq88.jpg)
-
-## 版本更新
-
-### 0.0.1
-
-初始测试版本
-
-### 0.0.2
-
-1. 增加插件logo显示
-
-2. 解决windows端导出typescript不生效问题
-
-### 0.0.3
-
-1. 增加点击链接跳转到swagger-ui的功能
-
-### 0.0.4
-
-1. 根据具体项目情况做了调整，一般情况下传递给后端的日期为string类型的，所以生成的typescript删除掉date类型
-
-2. 设置返回的属性都是必填
-
-### 0.0.5
-
-bug修复：部分number类型没有设置成 number | string
-
-### 0.0.6
-
-bug修复：
-
-1. 当属性类型为Object的时候，swagger请求返回值中没有type，导致属性被清空的问题
-
-2. 对于model名称是用内部类生成的，有特殊符号«»直接进行了替换
 
 **Enjoy!**

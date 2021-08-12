@@ -4,7 +4,7 @@
 	"description": "swagger to typescript plugin",
 	"publisher": "jeffrey",
 	"icon": "assets/app-icon.jpg",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"engines": {
 		"vscode": "^1.46.1"
 	},
